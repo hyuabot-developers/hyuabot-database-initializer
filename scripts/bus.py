@@ -6,7 +6,6 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from models.bus import BusStop, BusRoute, BusRouteStop
-from utils.convert import convert_string_to_time
 
 
 async def insert_bus_stop(db_session: Session):
@@ -101,10 +100,10 @@ async def insert_bus_route_item(db_session: Session, route_id: str):
                     company_name=route_search_item.find("companyName").text,
                     company_telephone=route_search_item.find("companyTel").text,
                     district_code=route_search_item.find("districtCd").text,
-                    up_first_time=convert_string_to_time(route_search_item.find("upFirstTime").text),
-                    up_last_time=convert_string_to_time(route_search_item.find("upLastTime").text),
-                    down_first_time=convert_string_to_time(route_search_item.find("downFirstTime").text),
-                    down_last_time=convert_string_to_time(route_search_item.find("downLastTime").text),
+                    up_first_time=f"{route_search_item.find('upFirstTime').text}+09:00",
+                    up_last_time=f"{route_search_item.find('upLastTime').text}+09:00",
+                    down_first_time=f"{route_search_item.find('downFirstTime').text}+09:00",
+                    down_last_time=f"{route_search_item.find('downLastTime').text}+09:00",
                     start_stop_id=route_search_item.find("startStationId").text,
                     end_stop_id=route_search_item.find("endStationId").text,
                     route_id=route_search_item.find("routeId").text,
