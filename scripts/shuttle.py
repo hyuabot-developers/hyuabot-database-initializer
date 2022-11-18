@@ -104,6 +104,7 @@ async def insert_shuttle_route(db_session: Session):
         dict(route_name="DY(short)"),
         dict(route_name="C"),
         dict(route_name="C(short)"),
+        dict(route_name="DJ"),
     ]
     insert_statement = insert(ShuttleRoute).values(route_list)
     insert_statement = insert_statement.on_conflict_do_nothing()
@@ -119,6 +120,7 @@ async def insert_shuttle_stop(db_session: Session):
         dict(stop_name="terminal", latitude=37.31945164682341, longitude=126.8455453372041),
         dict(stop_name="shuttlecock_i", latitude=37.2995897, longitude=126.8372216),
         dict(stop_name="dormitory_i", latitude=37.29339607529377, longitude=126.83630604103446),
+        dict(stop_name="jungang_stn", latitude=37.3147818, longitude=126.8397399),
     ]
     insert_statement = insert(ShuttleStop).values(stop_list)
     insert_statement = insert_statement.on_conflict_do_update(
@@ -157,6 +159,12 @@ async def insert_shuttle_route_stop(db_session: Session):
         dict(route_name="C(short)", stop_name="shuttlecock_o", stop_order=0),
         dict(route_name="C(short)", stop_name="station", stop_order=1),
         dict(route_name="C(short)", stop_name="shuttlecock_i", stop_order=2),
+        dict(route_name="DJ", stop_name="dormitory_o", stop_order=0),
+        dict(route_name="DJ", stop_name="shuttlecock_o", stop_order=1),
+        dict(route_name="DJ", stop_name="station", stop_order=2),
+        dict(route_name="DJ", stop_name="jungang_stn", stop_order=3),
+        dict(route_name="DJ", stop_name="shuttlecock_i", stop_order=4),
+        dict(route_name="DJ", stop_name="dormitory_i", stop_order=5),
     ]
     insert_statement = insert(ShuttleRouteStop).values(route_stop_list)
     insert_statement = insert_statement.on_conflict_do_update(
