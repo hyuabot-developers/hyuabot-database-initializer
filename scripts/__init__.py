@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 
 from scripts.bus import insert_bus_stop, insert_bus_route, insert_bus_route_stop
 from scripts.campus import insert_campus_data
-from scripts.reading_room import insert_reading_room_data
 from scripts.restaurant import insert_restaurant_data
 from scripts.shuttle import *
 from scripts.subway import insert_subway_route, insert_subway_station
@@ -37,7 +36,3 @@ async def initialize_campus_data(db_session: Session):
 
 async def initialize_restaurant_data(db_session: Session):
     await insert_restaurant_data(db_session)
-
-
-async def initialize_reading_room(db_session: Session):
-    await insert_reading_room_data(db_session)
