@@ -17,6 +17,9 @@ async def initialize_shuttle_data(db_session: Session):
     await insert_shuttle_stop(db_session)
     await insert_shuttle_route_stop(db_session)
     await insert_shuttle_timetable(db_session)
+    await insert_commute_shuttle_route(db_session)
+    await insert_commute_shuttle_stop(db_session)
+    await insert_commute_shuttle_timetable(db_session)
 
 
 async def initialize_bus_data(db_session: Session):

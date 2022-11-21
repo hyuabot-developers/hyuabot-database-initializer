@@ -1,6 +1,7 @@
 import asyncio
 import csv
 import json
+from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 
 from aiohttp import ClientSession
@@ -8,7 +9,8 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from models.shuttle import ShuttlePeriodType, ShuttlePeriod, ShuttleRoute, ShuttleStop, \
-    ShuttleRouteStop, ShuttleHoliday, ShuttleTimetable
+    ShuttleRouteStop, ShuttleHoliday, ShuttleTimetable, CommuteShuttleRoute, CommuteShuttleStop, \
+    CommuteShuttleTimetable
 
 
 async def insert_shuttle_period_type(db_session: Session):
@@ -98,13 +100,27 @@ async def insert_shuttle_period(db_session: Session):
 
 async def insert_shuttle_route(db_session: Session):
     route_list = [
-        dict(route_name="DH"),
-        dict(route_name="DH(short)"),
-        dict(route_name="DY"),
-        dict(route_name="DY(short)"),
-        dict(route_name="C"),
-        dict(route_name="C(short)"),
-        dict(route_name="DJ"),
+        dict(route_name="DH",
+             route_description_korean="한대앞 직행",
+             route_description_english="Direct to Station"),
+        dict(route_name="DHC",
+             route_description_korean="한대앞 직행(등교 시간대)",
+             route_description_english="Direct to Station(Commute)"),
+        dict(route_name="DY",
+             route_description_korean="예술인 직행",
+             route_description_english="Direct to Terminal"),
+        dict(route_name="DYC",
+             route_description_korean="예술인 직행(등교 시간대)",
+             route_description_english="Direct to Terminal(Commute)"),
+        dict(route_name="C",
+             route_description_korean="순환",
+             route_description_english="Circular"),
+        dict(route_name="CC",
+             route_description_korean="순환(등교 시간대)",
+             route_description_english="Circular(Commute)"),
+        dict(route_name="DJ",
+             route_description_korean="한대앞 직행(중앙역 경유)",
+             route_description_english="Direct to Station(Jungang Station)"),
     ]
     insert_statement = insert(ShuttleRoute).values(route_list)
     insert_statement = insert_statement.on_conflict_do_nothing()
@@ -134,42 +150,46 @@ async def insert_shuttle_stop(db_session: Session):
 
 async def insert_shuttle_route_stop(db_session: Session):
     route_stop_list = [
-        dict(route_name="DH", stop_name="dormitory_o", stop_order=0),
-        dict(route_name="DH", stop_name="shuttlecock_o", stop_order=1),
-        dict(route_name="DH", stop_name="station", stop_order=2),
-        dict(route_name="DH", stop_name="shuttlecock_i", stop_order=3),
-        dict(route_name="DH", stop_name="dormitory_i", stop_order=4),
-        dict(route_name="DH(short)", stop_name="shuttlecock_o", stop_order=0),
-        dict(route_name="DH(short)", stop_name="station", stop_order=1),
-        dict(route_name="DH(short)", stop_name="shuttlecock_i", stop_order=2),
-        dict(route_name="DY", stop_name="dormitory_o", stop_order=0),
-        dict(route_name="DY", stop_name="shuttlecock_o", stop_order=1),
-        dict(route_name="DY", stop_name="terminal", stop_order=2),
-        dict(route_name="DY", stop_name="shuttlecock_i", stop_order=3),
-        dict(route_name="DY", stop_name="dormitory_i", stop_order=4),
-        dict(route_name="DY(short)", stop_name="shuttlecock_o", stop_order=0),
-        dict(route_name="DY(short)", stop_name="terminal", stop_order=1),
-        dict(route_name="DY(short)", stop_name="shuttlecock_i", stop_order=2),
-        dict(route_name="C", stop_name="dormitory_o", stop_order=0),
-        dict(route_name="C", stop_name="shuttlecock_o", stop_order=1),
-        dict(route_name="C", stop_name="station", stop_order=2),
-        dict(route_name="C", stop_name="terminal", stop_order=3),
-        dict(route_name="C", stop_name="shuttlecock_i", stop_order=4),
-        dict(route_name="C", stop_name="dormitory_i", stop_order=5),
-        dict(route_name="C(short)", stop_name="shuttlecock_o", stop_order=0),
-        dict(route_name="C(short)", stop_name="station", stop_order=1),
-        dict(route_name="C(short)", stop_name="shuttlecock_i", stop_order=2),
-        dict(route_name="DJ", stop_name="dormitory_o", stop_order=0),
-        dict(route_name="DJ", stop_name="shuttlecock_o", stop_order=1),
-        dict(route_name="DJ", stop_name="station", stop_order=2),
-        dict(route_name="DJ", stop_name="jungang_stn", stop_order=3),
-        dict(route_name="DJ", stop_name="shuttlecock_i", stop_order=4),
-        dict(route_name="DJ", stop_name="dormitory_i", stop_order=5),
+        dict(route_name="DH", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
+        dict(route_name="DH", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
+        dict(route_name="DH", stop_name="station", stop_order=2, cumulative_time=10),
+        dict(route_name="DH", stop_name="shuttlecock_i", stop_order=3, cumulative_time=20),
+        dict(route_name="DH", stop_name="dormitory_i", stop_order=4, cumulative_time=25),
+        dict(route_name="DHC", stop_name="shuttlecock_o", stop_order=0, cumulative_time=0),
+        dict(route_name="DHC", stop_name="station", stop_order=1, cumulative_time=10),
+        dict(route_name="DHC", stop_name="shuttlecock_i", stop_order=2, cumulative_time=20),
+        dict(route_name="DY", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
+        dict(route_name="DY", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
+        dict(route_name="DY", stop_name="terminal", stop_order=2, cumulative_time=10),
+        dict(route_name="DY", stop_name="shuttlecock_i", stop_order=3, cumulative_time=20),
+        dict(route_name="DY", stop_name="dormitory_i", stop_order=4, cumulative_time=25),
+        dict(route_name="DYC", stop_name="shuttlecock_o", stop_order=0, cumulative_time=0),
+        dict(route_name="DYC", stop_name="terminal", stop_order=1, cumulative_time=10),
+        dict(route_name="DYC", stop_name="shuttlecock_i", stop_order=2, cumulative_time=20),
+        dict(route_name="C", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
+        dict(route_name="C", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
+        dict(route_name="C", stop_name="station", stop_order=2, cumulative_time=10),
+        dict(route_name="C", stop_name="terminal", stop_order=3, cumulative_time=15),
+        dict(route_name="C", stop_name="shuttlecock_i", stop_order=4, cumulative_time=25),
+        dict(route_name="C", stop_name="dormitory_i", stop_order=5, cumulative_time=30),
+        dict(route_name="CC", stop_name="shuttlecock_o", stop_order=0, cumulative_time=0),
+        dict(route_name="CC", stop_name="station", stop_order=1, cumulative_time=10),
+        dict(route_name="CC", stop_name="terminal", stop_order=2, cumulative_time=15),
+        dict(route_name="CC", stop_name="shuttlecock_i", stop_order=3, cumulative_time=25),
+        dict(route_name="DJ", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
+        dict(route_name="DJ", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
+        dict(route_name="DJ", stop_name="station", stop_order=2, cumulative_time=10),
+        dict(route_name="DJ", stop_name="jungang_stn", stop_order=3, cumulative_time=13),
+        dict(route_name="DJ", stop_name="shuttlecock_i", stop_order=4, cumulative_time=20),
+        dict(route_name="DJ", stop_name="dormitory_i", stop_order=5, cumulative_time=25),
     ]
     insert_statement = insert(ShuttleRouteStop).values(route_stop_list)
     insert_statement = insert_statement.on_conflict_do_update(
         constraint="pk_shuttle_route_stop",
-        set_=dict(stop_order=insert_statement.excluded.stop_order),
+        set_=dict(
+            stop_order=insert_statement.excluded.stop_order,
+            cumulative_time=insert_statement.excluded.cumulative_time,
+        ),
     )
     db_session.execute(insert_statement)
     db_session.commit()
@@ -198,7 +218,7 @@ async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
             reader = csv.reader((await response.text()).splitlines(), delimiter=",")
             for shuttle_type, shuttle_time, shuttle_start_stop in reader:
                 if shuttle_start_stop == "Shuttlecock":
-                    shuttle_type = f"{shuttle_type}(short)"
+                    shuttle_type = f"{shuttle_type}C"
                     shuttle_start_stop = "shuttlecock_o"
                 elif shuttle_start_stop == "Dormitory":
                     shuttle_start_stop = "dormitory_o"
@@ -215,6 +235,97 @@ async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
     insert_statement = insert_statement.on_conflict_do_update(
         constraint="pk_shuttle_timetable",
         set_=dict(start_stop=insert_statement.excluded.start_stop)
+    )
+    db_session.execute(insert_statement)
+    db_session.commit()
+
+
+async def insert_commute_shuttle_route(db_session: Session):
+    route_list = [
+        dict(route_name="1",
+             route_description_korean="화정/백석/마두/대화",
+             route_description_english="Hwajeong/Baeksuk/Madu/Daehwa"),
+        dict(route_name="2",
+             route_description_korean="공항/목동/신정/광명",
+             route_description_english="Gimpo Airport/Mokdong/Sinjeong/Gwangmyeong"),
+        dict(route_name="3",
+             route_description_korean="상도/봉천/신림/시흥",
+             route_description_english="Sangdo/Bongcheon/Sinlim/Siheung"),
+        dict(route_name="4",
+             route_description_korean="천호/잠실/성남/수내",
+             route_description_english="Cheonho/Jamsil/Sungnam/Sunae"),
+        dict(route_name="5",
+             route_description_korean="정자/죽전/수지/광교",
+             route_description_english="Jeongja/Jukjeon/Suji/Gwanggyo"),
+        dict(route_name="A",
+             route_description_korean="화정/백석/마두/대화",
+             route_description_english="Hwajeong/Baeksuk/Madu/Daehwa"),
+        dict(route_name="B",
+             route_description_korean="광명/구로/여의도",
+             route_description_english="Gwangmyeong/Guro/Yeouido"),
+        dict(route_name="C",
+             route_description_korean="복정/송파/잠실/천호",
+             route_description_english="Bokjeong/Songpa/Jamsil/Cheonho"),
+        dict(route_name="D",
+             route_description_korean="수지/죽전/정자/야탑",
+             route_description_english="Suji/Jukjeon/Jeongja/Yatap"),
+    ]
+    insert_statement = insert(CommuteShuttleRoute).values(route_list)
+    insert_statement = insert_statement.on_conflict_do_update(
+        index_elements=["route_name"],
+        set_=dict(
+            route_description_korean=insert_statement.excluded.route_description_korean,
+            route_description_english=insert_statement.excluded.route_description_english,
+        )
+    )
+    db_session.execute(insert_statement)
+    db_session.commit()
+
+
+async def insert_commute_shuttle_stop(db_session: Session):
+    base_url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/main"
+    url = f"{base_url}/commute/stop.csv"
+    stop_list: list[dict] = []
+    async with ClientSession() as session:
+        async with session.get(url) as response:
+            reader = csv.reader((await response.text()).splitlines(), delimiter=",")
+            for stop_name, description, latitude, longitude in reader:
+                stop_list.append(dict(
+                    stop_name=stop_name, description=description,
+                    latitude=latitude, longitude=longitude))
+    insert_statement = insert(CommuteShuttleStop).values(stop_list)
+    insert_statement = insert_statement.on_conflict_do_update(
+        index_elements=["stop_name"],
+        set_=dict(
+            description=insert_statement.excluded.description,
+            latitude=insert_statement.excluded.latitude,
+            longitude=insert_statement.excluded.longitude,
+        )
+    )
+    db_session.execute(insert_statement)
+    db_session.commit()
+
+
+async def insert_commute_shuttle_timetable(db_session: Session):
+    base_url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/main"
+    url = f"{base_url}/commute/route.csv"
+    timetable_list: list[dict] = []
+    stop_index_dict: defaultdict[str, int] = defaultdict(int)
+    async with ClientSession() as session:
+        async with session.get(url) as response:
+            reader = csv.reader((await response.text()).splitlines(), delimiter=",")
+            for route_name, stop_name, departure_time in reader:
+                timetable_list.append(dict(
+                    route_name=route_name, stop_order=stop_index_dict[route_name],
+                    stop_name=stop_name, departure_time=f"{departure_time}+09:00"))
+                stop_index_dict[route_name] += 1
+    insert_statement = insert(CommuteShuttleTimetable).values(timetable_list)
+    insert_statement = insert_statement.on_conflict_do_update(
+        index_elements=["route_name", "stop_name"],
+        set_=dict(
+            stop_order=insert_statement.excluded.stop_order,
+            departure_time=insert_statement.excluded.departure_time,
+        )
     )
     db_session.execute(insert_statement)
     db_session.commit()

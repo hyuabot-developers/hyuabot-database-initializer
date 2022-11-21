@@ -29,6 +29,8 @@ class ShuttleRoute(BaseModel):
     __tablename__ = "shuttle_route"
     route_id = Column(sqltypes.Integer, nullable=False, primary_key=True)
     route_name = Column(sqltypes.String(15), nullable=False)
+    route_description_korean = Column(sqltypes.String(100), nullable=False)
+    route_description_english = Column(sqltypes.String(100), nullable=False)
 
 
 class ShuttleStop(BaseModel):
@@ -44,6 +46,7 @@ class ShuttleRouteStop(BaseModel):
     route_name = Column(sqltypes.String(15), nullable=False)
     stop_name = Column(sqltypes.String(15), nullable=False)
     stop_order = Column(sqltypes.Integer, nullable=False)
+    cumulative_time = Column(sqltypes.Integer, nullable=False)
 
 
 class ShuttleTimetable(BaseModel):
@@ -54,3 +57,27 @@ class ShuttleTimetable(BaseModel):
     weekday = Column(sqltypes.Boolean, nullable=False)
     departure_time = Column(sqltypes.Time, nullable=False)
     start_stop = Column(sqltypes.String(15), nullable=False)
+
+
+class CommuteShuttleRoute(BaseModel):
+    __tablename__ = "commute_shuttle_route"
+    route_name = Column(sqltypes.String(15), primary_key=True)
+    route_description_korean = Column(sqltypes.String(100), nullable=False)
+    route_description_english = Column(sqltypes.String(100), nullable=False)
+
+
+class CommuteShuttleStop(BaseModel):
+    __tablename__ = "commute_shuttle_stop"
+    stop_name = Column(sqltypes.String(50), primary_key=True)
+    description = Column(sqltypes.String(100), nullable=False)
+    latitude = Column(sqltypes.Float, nullable=False)
+    longitude = Column(sqltypes.Float, nullable=False)
+
+
+class CommuteShuttleTimetable(BaseModel):
+    __tablename__ = "commute_shuttle_timetable"
+    __table_args__ = (PrimaryKeyConstraint('route_name', 'stop_name'),)
+    route_name = Column(sqltypes.String(15), nullable=False)
+    stop_name = Column(sqltypes.String(50), nullable=False)
+    stop_order = Column(sqltypes.Integer, nullable=False)
+    departure_time = Column(sqltypes.Time, nullable=False)
