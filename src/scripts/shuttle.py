@@ -228,7 +228,7 @@ async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
                         period_type=period,
                         weekday=day_dict[day] == "weekdays",
                         start_stop=shuttle_start_stop,
-                        departure_time=datetime.fromisoformat(f"1998-12-12T{shuttle_time}:00+09:00"),
+                        departure_time=f"{shuttle_time}:00+09:00",
                     ),
                 )
     insert_statement = insert(ShuttleTimetable).values(timetable)
