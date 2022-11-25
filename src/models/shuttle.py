@@ -14,7 +14,7 @@ class ShuttlePeriodType(BaseModel):
 class ShuttlePeriod(BaseModel):
     __tablename__ = "shuttle_period"
     __table_args__ = (PrimaryKeyConstraint("period_type", "period_start"),)
-    period_type: Mapped[str] = mapped_column(String(15), nullable=False)
+    period_type: Mapped[str] = mapped_column(String(20), nullable=False)
     period_start: Mapped[datetime.datetime] = mapped_column(nullable=False)
     period_end: Mapped[datetime.datetime] = mapped_column(nullable=False)
 
