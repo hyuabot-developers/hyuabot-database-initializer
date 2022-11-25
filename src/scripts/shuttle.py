@@ -234,7 +234,7 @@ async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
     insert_statement = insert(ShuttleTimetable).values(timetable)
     insert_statement = insert_statement.on_conflict_do_update(
         constraint="pk_shuttle_timetable",
-        set_=dict(start_stop=insert_statement.excluded.start_stop)
+        set_=dict(start_stop=insert_statement.excluded.start_stop),
     )
     db_session.execute(insert_statement)
     db_session.commit()
@@ -276,7 +276,7 @@ async def insert_commute_shuttle_route(db_session: Session):
         set_=dict(
             route_description_korean=insert_statement.excluded.route_description_korean,
             route_description_english=insert_statement.excluded.route_description_english,
-        )
+        ),
     )
     db_session.execute(insert_statement)
     db_session.commit()
@@ -300,7 +300,7 @@ async def insert_commute_shuttle_stop(db_session: Session):
             description=insert_statement.excluded.description,
             latitude=insert_statement.excluded.latitude,
             longitude=insert_statement.excluded.longitude,
-        )
+        ),
     )
     db_session.execute(insert_statement)
     db_session.commit()
@@ -325,7 +325,7 @@ async def insert_commute_shuttle_timetable(db_session: Session):
         set_=dict(
             stop_order=insert_statement.excluded.stop_order,
             departure_time=insert_statement.excluded.departure_time,
-        )
+        ),
     )
     db_session.execute(insert_statement)
     db_session.commit()
