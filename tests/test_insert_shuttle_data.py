@@ -116,7 +116,6 @@ class TestInsertShuttleData:
         commute_shuttle_route_count = session.query(CommuteShuttleRoute).count()
         assert commute_shuttle_route_count == 9
         for commute_shuttle_route_item in session.query(CommuteShuttleRoute).all():
-            # type: CommuteShuttleRoute
             assert type(commute_shuttle_route_item.route_name) is str
             assert type(commute_shuttle_route_item.route_description_korean) is str
             assert type(commute_shuttle_route_item.route_description_english) is str
