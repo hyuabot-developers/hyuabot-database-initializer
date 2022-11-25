@@ -92,9 +92,9 @@ async def insert_shuttle_period(db_session: Session):
                             period_end=end_date,
                         ))
             db_session.query(ShuttleHoliday).delete()
-            db_session.bulk_insert_mappings(ShuttleHoliday, holiday_items)
+            db_session.execute(insert(ShuttleHoliday).values(holiday_items))
             db_session.query(ShuttlePeriod).delete()
-            db_session.bulk_insert_mappings(ShuttlePeriod, period_items)
+            db_session.execute(insert(ShuttlePeriod).values(period_items))
             db_session.commit()
 
 

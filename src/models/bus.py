@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from sqlalchemy import PrimaryKeyConstraint, String, Time
 from sqlalchemy.orm import Mapped, mapped_column

@@ -126,7 +126,6 @@ class TestInsertShuttleData:
         commute_shuttle_stop_count = session.query(CommuteShuttleStop).count()
         assert commute_shuttle_stop_count > 0
         for commute_shuttle_stop_item in session.query(CommuteShuttleStop).all():
-            # type: CommuteShuttleStop
             assert type(commute_shuttle_stop_item.stop_name) is str
             assert type(commute_shuttle_stop_item.latitude) is float
             assert type(commute_shuttle_stop_item.longitude) is float
@@ -135,7 +134,6 @@ class TestInsertShuttleData:
         await insert_commute_shuttle_timetable(session)
         # Check if the data is inserted
         for commute_shuttle_timetable_item in session.query(CommuteShuttleTimetable).all():
-            # type: CommuteShuttleTimetable
             assert type(commute_shuttle_timetable_item.route_name) is str
             assert type(commute_shuttle_timetable_item.stop_name) is str
             assert type(commute_shuttle_timetable_item.stop_order) is int
