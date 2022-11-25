@@ -99,7 +99,7 @@ class TestInsertShuttleData:
             assert type(timetable_item.period_type) is str
             assert type(timetable_item.weekday) is bool
             assert type(timetable_item.start_stop) is str
-            assert type(timetable_item.departure_time) is str
+            assert type(timetable_item.departure_time) is datetime.time
 
         session.close()
 
