@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: hyuabot-database-initializer
+Version: 2022.11.25
+Summary: HYUabot Database Initializer
+Home-page: https://github.com/hyuabot-developers
+Author: Jeongin Lee
+Author-email: jil8885@hanyang.ac.kr
+License: GPLv3
+Project-URL: Source, https://github.com/hyuabot-developers/hyuabot-database-initializer
+Project-URL: Tracker, https://github.com/hyuabot-developers/hyuabot-database-initializer/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Provides-Extra: lint
+Provides-Extra: typecheck
+Provides-Extra: test
+
+UNKNOWN
+

@@ -1,13 +1,12 @@
-from typing import TYPE_CHECKING
+from sqlalchemy.orm import Session
 
 from scripts.bus import insert_bus_stop, insert_bus_route, insert_bus_route_stop
 from scripts.campus import insert_campus_data
 from scripts.restaurant import insert_restaurant_data
-from scripts.shuttle import *
+from scripts.shuttle import insert_shuttle_period_type, insert_shuttle_period, insert_shuttle_route, \
+    insert_shuttle_stop, insert_shuttle_route_stop, insert_shuttle_timetable, \
+    insert_commute_shuttle_route, insert_commute_shuttle_stop, insert_commute_shuttle_timetable
 from scripts.subway import insert_subway_route, insert_subway_station
-
-if TYPE_CHECKING:
-    from sqlalchemy.orm import Session
 
 
 async def initialize_shuttle_data(db_session: Session):
