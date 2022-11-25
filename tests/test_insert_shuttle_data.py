@@ -42,7 +42,7 @@ class TestInsertShuttleData:
         shuttle_period_type_count = session.query(ShuttlePeriodType).count()
         assert shuttle_period_type_count == 3
         for period_type_item in session.query(ShuttlePeriodType).all():  # type: ShuttlePeriod
-            assert type(period_type_item.period_type) is int
+            assert type(period_type_item.period_type) is str
 
         # Insert shuttle period
         await insert_shuttle_period(session)
