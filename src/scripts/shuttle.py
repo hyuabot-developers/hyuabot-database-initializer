@@ -71,9 +71,9 @@ async def insert_shuttle_period(db_session: Session):
                     end_date = datetime.strptime(period_item['end'], "%m/%d") \
                         .replace(year=now.year, hour=23, minute=59, second=59)
                     start_date = datetime.fromisoformat(
-                        f"{year}-{str(start_date.month).zfill(2)}-{str(start_date.day).zfill(2)}T00:00:00+09:00")
+                        f"{year}-{str(start_date.month).zfill(2)}-{str(start_date.day).zfill(2)}T00:00:00")
                     end_date = datetime.fromisoformat(
-                        f"{year}-{str(end_date.month).zfill(2)}-{str(end_date.day).zfill(2)}T23:59:59+09:00")
+                        f"{year}-{str(end_date.month).zfill(2)}-{str(end_date.day).zfill(2)}T23:59:59")
                     if start_date < end_date:
                         if now.month > int(end_date.month) or \
                                 (now.month == int(end_date.month) and now.day > int(end_date.day)):
@@ -228,7 +228,7 @@ async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
                         period_type=period,
                         weekday=day_dict[day] == "weekdays",
                         start_stop=shuttle_start_stop,
-                        departure_time=f"{shuttle_time}:00+09:00",
+                        departure_time=f"{shuttle_time}:00",
                     ),
                 )
     insert_statement = insert(ShuttleTimetable).values(timetable)
@@ -317,7 +317,7 @@ async def insert_commute_shuttle_timetable(db_session: Session):
             for route_name, stop_name, departure_time in reader:
                 timetable_list.append(dict(
                     route_name=route_name, stop_order=stop_index_dict[route_name],
-                    stop_name=stop_name, departure_time=f"{departure_time}+09:00"))
+                    stop_name=stop_name, departure_time=f"{departure_time}"))
                 stop_index_dict[route_name] += 1
     insert_statement = insert(CommuteShuttleTimetable).values(timetable_list)
     insert_statement = insert_statement.on_conflict_do_update(
