@@ -58,7 +58,7 @@ async def fetch_bus_stop(db_session: Session, keyword: str):
 
 
 async def insert_bus_route(db_session: Session):
-    routes = ["10-1", "62", "3100", "3101", "3102", "110", "707", "909", "50"]
+    routes = ["10-1", "62", "3100", "3100N", "3101", "3102", "110", "707", "909", "50"]
     tasks = [fetch_bus_route_list(db_session, route) for route in routes]
     await asyncio.gather(*tasks)
     db_session.commit()
@@ -74,7 +74,7 @@ async def fetch_bus_route_list(db_session: Session, keyword: str):
                 soup = BeautifulSoup(await response.text(), features="xml")
                 route_search_list = soup.find("response").find("msgBody").find_all("busRouteList")
                 for route in route_search_list:
-                    if "안산" in route.find("regionName").text:
+                    if "안산" in route.find("regionName").text and keyword == route.find("routeName").text:
                         route_list.append(route.find("routeId").text)
                 tasks = [insert_bus_route_item(db_session, route_id) for route_id in route_list]
                 await asyncio.gather(*tasks)
