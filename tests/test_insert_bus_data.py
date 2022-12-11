@@ -70,8 +70,6 @@ class TestInsertBusData:
         # Insert bus route stop
         await insert_bus_route_stop(session)
         # Check if the data is inserted
-        bus_route_stop_count = session.query(BusRouteStop).count()
-        assert bus_route_stop_count == 11
         for bus_route_stop_item in session.query(BusRouteStop).all():  # type: BusRouteStop
             assert type(bus_route_stop_item.route_id) is int
             assert type(bus_route_stop_item.stop_id) is int
