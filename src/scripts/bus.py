@@ -11,7 +11,8 @@ from models.bus import BusStop, BusRoute, BusRouteStop
 async def insert_bus_stop(db_session: Session):
     keywords = ["경기테크노파크", "한양대", "한국생산기술연구원", "성안길입구", "신안산대학교",
                 "새솔고", "상록수역", "수원역", "강남역우리은행", "본오동", "한라비발디1차", "푸르지오6차후문",
-                "선부동차고지", "안산역", "경인합섬앞", "오목천차고지"]
+                "선부동차고지", "안산역", "경인합섬앞", "오목천차고지", "안산해솔초등학교", "그랑시티자이", "광명역",
+                "파크푸르지오", "성포주공"]
     tasks = [fetch_bus_stop(db_session, keyword) for keyword in keywords]
     await asyncio.gather(*tasks)
     db_session.commit()
@@ -57,7 +58,7 @@ async def fetch_bus_stop(db_session: Session, keyword: str):
 
 
 async def insert_bus_route(db_session: Session):
-    routes = ["10-1", "62", "3100", "3101", "3102", "110", "707", "909"]
+    routes = ["10-1", "62", "3100", "3101", "3102", "110", "707", "909", "50"]
     tasks = [fetch_bus_route_list(db_session, route) for route in routes]
     await asyncio.gather(*tasks)
     db_session.commit()
@@ -151,6 +152,8 @@ async def insert_bus_route_stop(db_session: Session):
         dict(route_id="217000014", stop_id="216000070", stop_sequence=31, start_stop_id=217000066),  # 110(한양대입구)
         dict(route_id="216000001", stop_id="216000070", stop_sequence=20, start_stop_id=217000293),  # 707(한양대입구)
         dict(route_id="200000015", stop_id="216000070", stop_sequence=50, start_stop_id=217000626),  # 909(한양대입구)
+        dict(route_id="216000075", stop_id="216000759", stop_sequence=15, start_stop_id=216000358),  # 50(안산파크푸르지오)
+        dict(route_id="216000075", stop_id="216000117", stop_sequence=78, start_stop_id=213000487),  # 50(성포주공4단지)
     ]
     insert_statement = insert(BusRouteStop).values(bus_route_stop_list)
     insert_statement = insert_statement.on_conflict_do_update(
