@@ -53,13 +53,13 @@ class ShuttleRouteStop(BaseModel):
 
 class ShuttleTimetable(BaseModel):
     __tablename__ = "shuttle_timetable"
-    __table_args__ = (PrimaryKeyConstraint('route_name', 'period_type', 'weekday', 'departure_time',
+    __table_args__ = (PrimaryKeyConstraint('route_name', 'period_type', 'weekday', 'stop_name', 'departure_time',
                                            name="pk_shuttle_timetable"),)
     route_name: Mapped[str] = mapped_column(String(15), nullable=False)
     period_type: Mapped[str] = mapped_column(String(20), nullable=False)
     weekday: Mapped[bool] = mapped_column(nullable=False)
     departure_time: Mapped[datetime.time] = mapped_column(nullable=False)
-    start_stop: Mapped[str] = mapped_column(String(15), nullable=False)
+    stop_name: Mapped[str] = mapped_column(String(15), nullable=False)
 
 
 class CommuteShuttleRoute(BaseModel):

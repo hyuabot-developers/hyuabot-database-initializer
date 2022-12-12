@@ -213,29 +213,31 @@ async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
     url = f"{base_url}/{period}/{day}.csv"
     day_dict = {"week": "weekdays", "weekend": "weekends"}
     timetable: list[dict] = []
+
+    cumulative_time_dict: dict[str, dict[str, int]] = {}
+    for stop_route_item in db_session.query(ShuttleRouteStop).all():  # type: ShuttleRouteStop
+        if stop_route_item.route_name not in cumulative_time_dict:
+            cumulative_time_dict[stop_route_item.route_name] = {}
+        cumulative_time_dict[stop_route_item.route_name][stop_route_item.stop_name] = stop_route_item.cumulative_time
     async with ClientSession() as session:
         async with session.get(url) as response:
             reader = csv.reader((await response.text()).splitlines(), delimiter=",")
             for shuttle_type, shuttle_time, shuttle_start_stop in reader:
                 if shuttle_start_stop == "Shuttlecock":
                     shuttle_type = f"{shuttle_type}C"
-                    shuttle_start_stop = "shuttlecock_o"
-                elif shuttle_start_stop == "Dormitory":
-                    shuttle_start_stop = "dormitory_o"
-                timetable.append(
-                    dict(
-                        route_name=shuttle_type,
-                        period_type=period,
-                        weekday=day_dict[day] == "weekdays",
-                        start_stop=shuttle_start_stop,
-                        departure_time=f"{shuttle_time}:00",
-                    ),
-                )
+                for stop_name in cumulative_time_dict[shuttle_type].keys():
+                    departure_time = datetime.strptime(shuttle_time, "%H:%M") + timedelta(
+                        minutes=cumulative_time_dict[shuttle_type][stop_name])
+                    timetable.append(
+                        dict(
+                            route_name=shuttle_type,
+                            period_type=period,
+                            weekday=day_dict[day] == "weekdays",
+                            stop_name=stop_name,
+                            departure_time=departure_time.time(),
+                        ),
+                    )
     insert_statement = insert(ShuttleTimetable).values(timetable)
-    insert_statement = insert_statement.on_conflict_do_update(
-        constraint="pk_shuttle_timetable",
-        set_=dict(start_stop=insert_statement.excluded.start_stop),
-    )
     db_session.execute(insert_statement)
     db_session.commit()
 
