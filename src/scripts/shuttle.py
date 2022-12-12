@@ -214,7 +214,7 @@ async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
     day_dict = {"week": "weekdays", "weekend": "weekends"}
     timetable: list[dict] = []
 
-    cumulative_time_dict = {}
+    cumulative_time_dict: dict[str, dict[str, int]] = {}
     for stop_route_item in db_session.query(ShuttleRouteStop).all():  # type: ShuttleRouteStop
         if stop_route_item.route_name not in cumulative_time_dict:
             cumulative_time_dict[stop_route_item.route_name] = {}
