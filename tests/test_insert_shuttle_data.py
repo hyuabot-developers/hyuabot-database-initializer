@@ -60,16 +60,6 @@ class TestInsertShuttleData:
             assert type(holiday_item.holiday_date) is datetime.date
             assert type(holiday_item.calendar_type) is str
 
-        # Insert shuttle route
-        await insert_shuttle_route(session)
-        # Check if the data is inserted
-        shuttle_route_count = session.query(ShuttleRoute).count()
-        assert shuttle_route_count > 0
-        for route_item in session.query(ShuttleRoute).all():  # type: ShuttleRoute
-            assert type(route_item.route_name) is str
-            assert type(route_item.route_description_korean) is str
-            assert type(route_item.route_description_english) is str
-
         # Insert shuttle stop
         await insert_shuttle_stop(session)
         # Check if the data is inserted
@@ -79,27 +69,6 @@ class TestInsertShuttleData:
             assert type(stop_item.stop_name) is str
             assert type(stop_item.latitude) is float
             assert type(stop_item.longitude) is float
-
-        # Insert shuttle route-stop
-        await insert_shuttle_route_stop(session)
-        # Check if the data is inserted
-        shuttle_stop_route_count = session.query(ShuttleRouteStop).count()
-        assert shuttle_stop_route_count > 0
-        for stop_route_item in session.query(ShuttleRouteStop).all():  # type: ShuttleRouteStop
-            assert type(stop_route_item.route_name) is str
-            assert type(stop_route_item.stop_name) is str
-            assert type(stop_route_item.stop_order) is int
-            assert type(stop_route_item.cumulative_time) is int
-
-        # Insert shuttle timetable
-        await insert_shuttle_timetable(session)
-        # Check if the data is inserted
-        for timetable_item in session.query(ShuttleTimetable).all():  # type: ShuttleTimetable
-            assert type(timetable_item.route_name) is str
-            assert type(timetable_item.period_type) is str
-            assert type(timetable_item.weekday) is bool
-            assert type(timetable_item.stop_name) is str
-            assert type(timetable_item.departure_time) is datetime.time
 
         session.close()
 
