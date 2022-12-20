@@ -5,11 +5,11 @@ from sqlalchemy import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from models import BaseModel
-from models.shuttle import ShuttlePeriod, ShuttlePeriodType, ShuttleHoliday, ShuttleRoute, ShuttleStop, \
-    ShuttleRouteStop, ShuttleTimetable, CommuteShuttleRoute, CommuteShuttleStop, CommuteShuttleTimetable
+from models.shuttle import ShuttlePeriod, ShuttlePeriodType, ShuttleHoliday, ShuttleStop, \
+    CommuteShuttleRoute, CommuteShuttleStop, CommuteShuttleTimetable
 from scripts import insert_shuttle_period_type, \
-    insert_shuttle_period, insert_shuttle_route, insert_shuttle_stop, insert_shuttle_route_stop, \
-    insert_shuttle_timetable, insert_commute_shuttle_route, insert_commute_shuttle_stop, \
+    insert_shuttle_period, insert_shuttle_stop, \
+    insert_commute_shuttle_route, insert_commute_shuttle_stop, \
     insert_commute_shuttle_timetable
 from utils.database import get_db_engine
 

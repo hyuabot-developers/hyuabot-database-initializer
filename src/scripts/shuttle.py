@@ -8,8 +8,8 @@ from aiohttp import ClientSession
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from models.shuttle import ShuttlePeriodType, ShuttlePeriod, ShuttleRoute, ShuttleStop, \
-    ShuttleRouteStop, ShuttleHoliday, ShuttleTimetable, CommuteShuttleRoute, CommuteShuttleStop, \
+from models.shuttle import ShuttlePeriodType, ShuttlePeriod, ShuttleStop, \
+    ShuttleHoliday, CommuteShuttleRoute, CommuteShuttleStop, \
     CommuteShuttleTimetable
 
 
