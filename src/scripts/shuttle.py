@@ -1,4 +1,3 @@
-import asyncio
 import csv
 import json
 from collections import defaultdict
@@ -8,8 +7,8 @@ from aiohttp import ClientSession
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from models.shuttle import ShuttlePeriodType, ShuttlePeriod, ShuttleRoute, ShuttleStop, \
-    ShuttleRouteStop, ShuttleHoliday, ShuttleTimetable, CommuteShuttleRoute, CommuteShuttleStop, \
+from models.shuttle import ShuttlePeriodType, ShuttlePeriod, ShuttleStop, \
+    ShuttleHoliday, CommuteShuttleRoute, CommuteShuttleStop, \
     CommuteShuttleTimetable
 
 
@@ -98,36 +97,6 @@ async def insert_shuttle_period(db_session: Session):
             db_session.commit()
 
 
-async def insert_shuttle_route(db_session: Session):
-    route_list = [
-        dict(route_name="DH",
-             route_description_korean="한대앞 직행",
-             route_description_english="Direct to Station"),
-        dict(route_name="DHC",
-             route_description_korean="한대앞 직행(등교 시간대)",
-             route_description_english="Direct to Station(Commute)"),
-        dict(route_name="DY",
-             route_description_korean="예술인 직행",
-             route_description_english="Direct to Terminal"),
-        dict(route_name="DYC",
-             route_description_korean="예술인 직행(등교 시간대)",
-             route_description_english="Direct to Terminal(Commute)"),
-        dict(route_name="C",
-             route_description_korean="순환",
-             route_description_english="Circular"),
-        dict(route_name="CC",
-             route_description_korean="순환(등교 시간대)",
-             route_description_english="Circular(Commute)"),
-        dict(route_name="DJ",
-             route_description_korean="한대앞 직행(중앙역 경유)",
-             route_description_english="Direct to Station(Jungang Station)"),
-    ]
-    insert_statement = insert(ShuttleRoute).values(route_list)
-    insert_statement = insert_statement.on_conflict_do_nothing()
-    db_session.execute(insert_statement)
-    db_session.commit()
-
-
 async def insert_shuttle_stop(db_session: Session):
     stop_list = [
         dict(stop_name="dormitory_o", latitude=37.29339607529377, longitude=126.83630604103446),
@@ -144,100 +113,6 @@ async def insert_shuttle_stop(db_session: Session):
         set_=dict(
             latitude=insert_statement.excluded.latitude, longitude=insert_statement.excluded.longitude),
     )
-    db_session.execute(insert_statement)
-    db_session.commit()
-
-
-async def insert_shuttle_route_stop(db_session: Session):
-    route_stop_list = [
-        dict(route_name="DH", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
-        dict(route_name="DH", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
-        dict(route_name="DH", stop_name="station", stop_order=2, cumulative_time=10),
-        dict(route_name="DH", stop_name="shuttlecock_i", stop_order=3, cumulative_time=20),
-        dict(route_name="DH", stop_name="dormitory_i", stop_order=4, cumulative_time=25),
-        dict(route_name="DHC", stop_name="shuttlecock_o", stop_order=0, cumulative_time=0),
-        dict(route_name="DHC", stop_name="station", stop_order=1, cumulative_time=10),
-        dict(route_name="DHC", stop_name="shuttlecock_i", stop_order=2, cumulative_time=20),
-        dict(route_name="DY", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
-        dict(route_name="DY", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
-        dict(route_name="DY", stop_name="terminal", stop_order=2, cumulative_time=10),
-        dict(route_name="DY", stop_name="shuttlecock_i", stop_order=3, cumulative_time=20),
-        dict(route_name="DY", stop_name="dormitory_i", stop_order=4, cumulative_time=25),
-        dict(route_name="DYC", stop_name="shuttlecock_o", stop_order=0, cumulative_time=0),
-        dict(route_name="DYC", stop_name="terminal", stop_order=1, cumulative_time=10),
-        dict(route_name="DYC", stop_name="shuttlecock_i", stop_order=2, cumulative_time=20),
-        dict(route_name="C", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
-        dict(route_name="C", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
-        dict(route_name="C", stop_name="station", stop_order=2, cumulative_time=10),
-        dict(route_name="C", stop_name="terminal", stop_order=3, cumulative_time=15),
-        dict(route_name="C", stop_name="shuttlecock_i", stop_order=4, cumulative_time=25),
-        dict(route_name="C", stop_name="dormitory_i", stop_order=5, cumulative_time=30),
-        dict(route_name="CC", stop_name="shuttlecock_o", stop_order=0, cumulative_time=0),
-        dict(route_name="CC", stop_name="station", stop_order=1, cumulative_time=10),
-        dict(route_name="CC", stop_name="terminal", stop_order=2, cumulative_time=15),
-        dict(route_name="CC", stop_name="shuttlecock_i", stop_order=3, cumulative_time=25),
-        dict(route_name="DJ", stop_name="dormitory_o", stop_order=0, cumulative_time=-5),
-        dict(route_name="DJ", stop_name="shuttlecock_o", stop_order=1, cumulative_time=0),
-        dict(route_name="DJ", stop_name="station", stop_order=2, cumulative_time=10),
-        dict(route_name="DJ", stop_name="jungang_stn", stop_order=3, cumulative_time=13),
-        dict(route_name="DJ", stop_name="shuttlecock_i", stop_order=4, cumulative_time=20),
-        dict(route_name="DJ", stop_name="dormitory_i", stop_order=5, cumulative_time=25),
-    ]
-    insert_statement = insert(ShuttleRouteStop).values(route_stop_list)
-    insert_statement = insert_statement.on_conflict_do_update(
-        constraint="pk_shuttle_route_stop",
-        set_=dict(
-            stop_order=insert_statement.excluded.stop_order,
-            cumulative_time=insert_statement.excluded.cumulative_time,
-        ),
-    )
-    db_session.execute(insert_statement)
-    db_session.commit()
-
-
-async def insert_shuttle_timetable(db_session: Session):
-    term_keys = ["semester", "vacation", "vacation_session"]
-    day_keys = ["week", "weekend"]
-
-    tasks = []
-    db_session.query(ShuttleTimetable).delete()
-    for term in term_keys:
-        for day in day_keys:
-            tasks.append(fetch_shuttle_timetable(db_session, term, day))
-    await asyncio.gather(*tasks)
-    db_session.commit()
-
-
-async def fetch_shuttle_timetable(db_session: Session, period: str, day: str):
-    base_url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/main"
-    url = f"{base_url}/{period}/{day}.csv"
-    day_dict = {"week": "weekdays", "weekend": "weekends"}
-    timetable: list[dict] = []
-
-    cumulative_time_dict: dict[str, dict[str, int]] = {}
-    for stop_route_item in db_session.query(ShuttleRouteStop).all():  # type: ShuttleRouteStop
-        if stop_route_item.route_name not in cumulative_time_dict:
-            cumulative_time_dict[stop_route_item.route_name] = {}
-        cumulative_time_dict[stop_route_item.route_name][stop_route_item.stop_name] = stop_route_item.cumulative_time
-    async with ClientSession() as session:
-        async with session.get(url) as response:
-            reader = csv.reader((await response.text()).splitlines(), delimiter=",")
-            for shuttle_type, shuttle_time, shuttle_start_stop in reader:
-                if shuttle_start_stop == "Shuttlecock":
-                    shuttle_type = f"{shuttle_type}C"
-                for stop_name in cumulative_time_dict[shuttle_type].keys():
-                    departure_time = datetime.strptime(shuttle_time, "%H:%M") + timedelta(
-                        minutes=cumulative_time_dict[shuttle_type][stop_name])
-                    timetable.append(
-                        dict(
-                            route_name=shuttle_type,
-                            period_type=period,
-                            weekday=day_dict[day] == "weekdays",
-                            stop_name=stop_name,
-                            departure_time=departure_time.time(),
-                        ),
-                    )
-    insert_statement = insert(ShuttleTimetable).values(timetable)
     db_session.execute(insert_statement)
     db_session.commit()
 
