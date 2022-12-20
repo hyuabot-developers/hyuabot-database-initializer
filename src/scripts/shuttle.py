@@ -1,4 +1,3 @@
-import asyncio
 import csv
 import json
 from collections import defaultdict
