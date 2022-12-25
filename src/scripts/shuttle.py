@@ -25,7 +25,7 @@ async def insert_shuttle_period_type(db_session: Session):
 
 
 async def insert_shuttle_period(db_session: Session):
-    url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/main/date.json"
+    url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/feat/v2/date.json"
 
     period_items = []
     holiday_items = []
