@@ -34,7 +34,7 @@ async def fetch_bus_stop(db_session: Session, keyword: str):
                         stop_id=station.find("stationId").text,
                         stop_name=station.find("stationName").text,
                         district_code=station.find("districtCd").text,
-                        mobile_number=station.find("mobileNo").text,
+                        mobile_number=str(station.find("mobileNo").text).strip(),
                         region_name=station.find("regionName").text,
                         latitude=station.find("x").text,
                         longitude=station.find("y").text,
