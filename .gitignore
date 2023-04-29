@@ -2,3 +2,7 @@
 .idea/
 
 *.pyc
+
+.eggs/
+
+src/hyuabot_database_initializer.egg-info/

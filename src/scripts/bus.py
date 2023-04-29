@@ -10,16 +10,18 @@ from models.bus import BusStop, BusRoute, BusRouteStop
 
 async def insert_bus_stop(db_session: Session):
     keywords = ["경기테크노파크", "한양대", "한국생산기술연구원", "성안길입구", "신안산대학교",
-                "새솔고", "상록수역", "수원역", "강남역우리은행", "본오동", "한라비발디1차", "푸르지오6차후문",
-                "선부동차고지", "안산역", "경인합섬앞", "오목천차고지", "안산해솔초등학교", "그랑시티자이", "광명역",
-                "파크푸르지오", "성포주공"]
+                "새솔고", "상록수역", "수원역", "강남역우리은행", "본오동", "한라비발디1차",
+                "푸르지오6차후문", "선부동차고지", "안산역", "경인합섬앞", "오목천차고지",
+                "안산해솔초등학교", "그랑시티자이", "광명역", "파크푸르지오", "성포주공",
+                "원시역", "시우역"]
     tasks = [fetch_bus_stop(db_session, keyword) for keyword in keywords]
     await asyncio.gather(*tasks)
     db_session.commit()
 
 
 async def fetch_bus_stop(db_session: Session, keyword: str):
-    url = f"http://openapi.gbis.go.kr/ws/rest/busstationservice?serviceKey=1234567890&keyword={keyword}"
+    url = "http://openapi.gbis.go.kr/ws/rest/busstationservice?serviceKey=" \
+          f"1234567890&keyword={keyword}"
     stop_list: list[dict] = []
     timeout = ClientTimeout(total=3.0)
     try:
