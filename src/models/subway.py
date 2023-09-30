@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -21,4 +23,4 @@ class SubwayRouteStation(BaseModel):
     route_id: Mapped[int] = mapped_column(nullable=False)
     station_name: Mapped[str] = mapped_column(String(30), nullable=False)
     station_sequence: Mapped[int] = mapped_column(nullable=False)
-    cumulative_time: Mapped[float] = mapped_column(nullable=False)
+    cumulative_time: Mapped[datetime.timedelta] = mapped_column(nullable=False)

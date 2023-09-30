@@ -1,4 +1,5 @@
 import csv
+from datetime import timedelta
 
 from aiohttp import ClientSession
 from sqlalchemy.dialects.postgresql import insert
@@ -61,7 +62,7 @@ async def insert_subway_station(db_session: Session):
                             route_id=route_id,
                             station_name=station_name,
                             station_sequence=row_index,
-                            cumulative_time=cumulative_time,
+                            cumulative_time=timedelta(minutes=float(cumulative_time)),
                         ),
                     )
                     station_name_list.append(dict(station_name=station_name))

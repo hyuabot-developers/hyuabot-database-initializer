@@ -25,7 +25,7 @@ async def insert_shuttle_period_type(db_session: Session):
 
 
 async def insert_shuttle_period(db_session: Session):
-    url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/feat/v2/date.json"
+    url = "https://raw.githubusercontent.com/jil8885/hanyang-shuttle-timetable/main/date.json"
 
     period_items = []
     holiday_items = []
@@ -87,8 +87,8 @@ async def insert_shuttle_period(db_session: Session):
                     period_items.append(
                         dict(
                             period_type=period,
-                            period_start=start_date,
-                            period_end=end_date,
+                            period_start=start_date.astimezone(timezone(timedelta(hours=9))),
+                            period_end=end_date.astimezone(timezone(timedelta(hours=9))),
                         ))
             db_session.query(ShuttleHoliday).delete()
             db_session.execute(insert(ShuttleHoliday).values(holiday_items))
@@ -119,30 +119,12 @@ async def insert_shuttle_stop(db_session: Session):
 
 async def insert_commute_shuttle_route(db_session: Session):
     route_list = [
-        dict(route_name="1",
-             route_description_korean="화정/백석/마두/대화",
-             route_description_english="Hwajeong/Baeksuk/Madu/Daehwa"),
-        dict(route_name="2",
-             route_description_korean="공항/목동/신정/광명",
-             route_description_english="Gimpo Airport/Mokdong/Sinjeong/Gwangmyeong"),
-        dict(route_name="3",
-             route_description_korean="상도/봉천/신림/시흥",
-             route_description_english="Sangdo/Bongcheon/Sinlim/Siheung"),
         dict(route_name="4",
              route_description_korean="천호/잠실/성남/수내",
              route_description_english="Cheonho/Jamsil/Sungnam/Sunae"),
         dict(route_name="5",
              route_description_korean="정자/죽전/수지/광교",
              route_description_english="Jeongja/Jukjeon/Suji/Gwanggyo"),
-        dict(route_name="A",
-             route_description_korean="화정/백석/마두/대화",
-             route_description_english="Hwajeong/Baeksuk/Madu/Daehwa"),
-        dict(route_name="B",
-             route_description_korean="광명/구로/여의도",
-             route_description_english="Gwangmyeong/Guro/Yeouido"),
-        dict(route_name="C",
-             route_description_korean="복정/송파/잠실/천호",
-             route_description_english="Bokjeong/Songpa/Jamsil/Cheonho"),
         dict(route_name="D",
              route_description_korean="수지/죽전/정자/야탑",
              route_description_english="Suji/Jukjeon/Jeongja/Yatap"),
@@ -160,7 +142,7 @@ async def insert_commute_shuttle_route(db_session: Session):
 
 
 async def insert_commute_shuttle_stop(db_session: Session):
-    base_url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/main"
+    base_url = "https://raw.githubusercontent.com/jil8885/hanyang-shuttle-timetable/main"
     url = f"{base_url}/commute/stop.csv"
     stop_list: list[dict] = []
     async with ClientSession() as session:
@@ -184,7 +166,7 @@ async def insert_commute_shuttle_stop(db_session: Session):
 
 
 async def insert_commute_shuttle_timetable(db_session: Session):
-    base_url = "https://raw.githubusercontent.com/hyuabot-developers/hyuabot-shuttle-timetable/main"
+    base_url = "https://raw.githubusercontent.com/jil8885/hanyang-shuttle-timetable/main"
     url = f"{base_url}/commute/route.csv"
     timetable_list: list[dict] = []
     stop_index_dict: defaultdict[str, int] = defaultdict(int)
@@ -194,7 +176,8 @@ async def insert_commute_shuttle_timetable(db_session: Session):
             for route_name, stop_name, departure_time in reader:
                 timetable_list.append(dict(
                     route_name=route_name, stop_order=stop_index_dict[route_name],
-                    stop_name=stop_name, departure_time=f"{departure_time}"))
+                    stop_name=stop_name, departure_time=f"{departure_time} +09:00",
+                ))
                 stop_index_dict[route_name] += 1
     insert_statement = insert(CommuteShuttleTimetable).values(timetable_list)
     insert_statement = insert_statement.on_conflict_do_update(
