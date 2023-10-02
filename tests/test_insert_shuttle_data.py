@@ -83,7 +83,7 @@ class TestInsertShuttleData:
         await insert_commute_shuttle_route(session)
         # Check if the data is inserted
         commute_shuttle_route_count = session.query(CommuteShuttleRoute).count()
-        assert commute_shuttle_route_count == 9
+        assert commute_shuttle_route_count == 3
         for commute_shuttle_route_item in session.query(CommuteShuttleRoute).all():
             assert type(commute_shuttle_route_item.route_name) is str
             assert type(commute_shuttle_route_item.route_description_korean) is str

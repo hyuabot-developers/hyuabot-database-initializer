@@ -2,13 +2,13 @@ name: default
 on: [pull_request, push]
 jobs:
   lint:
-    runs-on: self-hosted
+    runs-on: [self-hosted, X64, Linux]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:
-        python-version: "3.11"
+        python-version: "3.11.5"
     - name: Install dependencies
       env:
         REQUIREMENTS_FILE: lint
@@ -25,8 +25,7 @@ jobs:
         fi
         python -m flake8 src/ tests
   typecheck:
-    needs: [lint]
-    runs-on: self-hosted
+    runs-on: [self-hosted, X64, Linux]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.11
@@ -48,8 +47,7 @@ jobs:
         fi
         python -m mypy --no-color-output src/ tests
   test:
-    runs-on: self-hosted
-    needs: [typecheck]
+    runs-on: [self-hosted, X64, Linux]
     env:
       POSTGRES_ID: test
       POSTGRES_PASSWORD: test
@@ -83,16 +81,19 @@ jobs:
       run: |
         python -m pytest -m 'not integration' -v
   docker-image-build:
-    runs-on: self-hosted
-    needs: [test]
+    runs-on: [self-hosted, ARM64, Linux]
+    needs: [lint, typecheck, test]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Docker Build Environment
       uses: docker/setup-buildx-action@v2
-    - name: Build and push
+    - name: Build and save docker image
       uses: docker/build-push-action@v3
       with:
         context: .
         file: ./Dockerfile
-        push: false
-        tags: hyuabot/hyuabot-database-initializer:latest
+        load: true
+        tags: localhost:32000/hyuabot/hyuabot-database-initializer:latest
+    - name: Push docker image
+      run: |
+        docker push localhost:32000/hyuabot/hyuabot-database-initializer:latest
