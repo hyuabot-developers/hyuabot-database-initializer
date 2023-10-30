@@ -13,7 +13,7 @@ async def insert_bus_stop(db_session: Session):
                 "새솔고", "상록수역", "수원역", "강남역우리은행", "본오동", "한라비발디1차",
                 "푸르지오6차후문", "선부동차고지", "안산역", "경인합섬앞", "오목천차고지",
                 "안산해솔초등학교", "그랑시티자이", "광명역", "파크푸르지오", "성포주공",
-                "원시역", "시우역"]
+                "원시역", "시우역", "강남역", "파이낸셜뉴스"]
     tasks = [fetch_bus_stop(db_session, keyword) for keyword in keywords]
     await asyncio.gather(*tasks)
     db_session.commit()
@@ -106,7 +106,7 @@ async def insert_bus_route_item(db_session: Session, route_id: str):
                     up_first_time=f"{route_search_item.find('upFirstTime').text} +09:00",
                     up_last_time=f"{route_search_item.find('upLastTime').text} +09:00",
                     down_first_time=f"{route_search_item.find('downFirstTime').text} +09:00",
-                    down_last_time=f"{route_search_item.find('downLastTime').text} +09:06",
+                    down_last_time=f"{route_search_item.find('downLastTime').text} +09:00",
                     start_stop_id=route_search_item.find("startStationId").text,
                     end_stop_id=route_search_item.find("endStationId").text,
                     route_id=route_search_item.find("routeId").text,
