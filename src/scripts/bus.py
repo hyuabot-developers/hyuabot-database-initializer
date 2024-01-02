@@ -23,9 +23,9 @@ async def fetch_bus_stop(db_session: Session, keyword: str):
     url = "http://openapi.gbis.go.kr/ws/rest/busstationservice?serviceKey=" \
           f"1234567890&keyword={keyword}"
     stop_list: list[dict] = []
-    timeout = ClientTimeout(total=3.0)
+    timeout = ClientTimeout(total=30.0)
     try:
-        async with ClientSession(timeout=timeout) as session:
+        async with ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), features="xml")
                 station_list = soup.find("response").find("msgBody").find_all("busStationList")
@@ -71,9 +71,9 @@ async def insert_bus_route(db_session: Session):
 async def fetch_bus_route_list(db_session: Session, keyword: str):
     url = f"http://openapi.gbis.go.kr/ws/rest/busrouteservice?serviceKey=1234567890&keyword={keyword}"
     route_list: list[str] = []
-    timeout = ClientTimeout(total=3.0)
+    timeout = ClientTimeout(total=30.0)
     try:
-        async with ClientSession(timeout=timeout) as session:
+        async with ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), features="xml")
                 route_search_list = soup.find("response").find("msgBody").find_all("busRouteList")
@@ -92,9 +92,9 @@ async def insert_bus_route_item(db_session: Session, route_id: str):
     url = f"http://openapi.gbis.go.kr/ws/rest/busrouteservice/info" \
           f"?serviceKey=1234567890&routeId={route_id}"
     route_list: list[dict] = []
-    timeout = ClientTimeout(total=3.0)
+    timeout = ClientTimeout(total=30.0)
     try:
-        async with ClientSession(timeout=timeout) as session:
+        async with ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), features="xml")
                 route_search_item = soup.find("response").find("msgBody").find("busRouteInfoItem")
