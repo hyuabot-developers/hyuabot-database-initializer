@@ -154,7 +154,7 @@ async def insert_bus_route_stop(db_session: Session):
         dict(route_id="216000068", stop_id="216000138", stop_sequence=28, start_stop_id=216000145),  # 10-1(상록수역3번출구)
         dict(route_id="216000016", stop_id="216000152", stop_sequence=16, start_stop_id=216000053),  # 62(성안길입구)
         dict(route_id="217000014", stop_id="216000070", stop_sequence=31, start_stop_id=217000066),  # 110(한양대입구)
-        dict(route_id="216000001", stop_id="216000070", stop_sequence=20, start_stop_id=217000293),  # 707(한양대입구)
+        dict(route_id="216000104", stop_id="216000070", stop_sequence=20, start_stop_id=217000293),  # 7070(한양대입구)
         dict(route_id="200000015", stop_id="216000070", stop_sequence=50, start_stop_id=217000626),  # 909(한양대입구)
         dict(route_id="216000075", stop_id="216000759", stop_sequence=15, start_stop_id=216000358),  # 50(안산파크푸르지오)
         dict(route_id="216000075", stop_id="216000117", stop_sequence=78, start_stop_id=213000487),  # 50(성포주공4단지)
