@@ -11,3 +11,6 @@ class Restaurant(BaseModel):
     restaurant_name: Mapped[str] = mapped_column(String(30), nullable=False)
     latitude: Mapped[float] = mapped_column(nullable=False)
     longitude: Mapped[float] = mapped_column(nullable=False)
+    breakfast_time: Mapped[str] = mapped_column(String(40))
+    lunch_time: Mapped[str] = mapped_column(String(40))
+    dinner_time: Mapped[str] = mapped_column(String(40))
