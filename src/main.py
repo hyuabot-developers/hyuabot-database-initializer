@@ -19,7 +19,7 @@ async def main():
         initialize_subway_data(session),
         initialize_campus_data(session),
         initialize_restaurant_data(session),
-        initialize_phonebook_data(session)
+        initialize_phonebook_data(session),
     ]
     await asyncio.gather(*job_list)
     session.close()

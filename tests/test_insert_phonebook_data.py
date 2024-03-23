@@ -65,4 +65,3 @@ class TestInsertPhonebookData:
             assert type(phonebook.campus_id) is int
             assert type(phonebook.name) is str
             assert type(phonebook.phone) is str
-
