@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from scripts.bus import insert_bus_stop, insert_bus_route, insert_bus_route_stop
 from scripts.campus import insert_campus_data
+from scripts.phonebook import insert_phone_book
 from scripts.restaurant import insert_restaurant_data
 from scripts.shuttle import insert_shuttle_period_type, insert_shuttle_period, insert_shuttle_stop, \
     insert_commute_shuttle_route, insert_commute_shuttle_stop, insert_commute_shuttle_timetable
@@ -34,3 +35,7 @@ async def initialize_campus_data(db_session: Session):
 
 async def initialize_restaurant_data(db_session: Session):
     await insert_restaurant_data(db_session)
+
+
+async def initialize_phonebook_data(db_session: Session):
+    await insert_phone_book(db_session)
