@@ -3,7 +3,7 @@ import asyncio
 from sqlalchemy.orm import sessionmaker
 
 from scripts import initialize_shuttle_data, initialize_bus_data, initialize_subway_data, \
-    initialize_campus_data, initialize_restaurant_data, initialize_phonebook_data
+    initialize_campus_data, initialize_restaurant_data, initialize_phonebook_data, initialize_calendar_data
 from utils.database import get_db_engine
 
 
@@ -20,6 +20,7 @@ async def main():
         initialize_campus_data(session),
         initialize_restaurant_data(session),
         initialize_phonebook_data(session),
+        initialize_calendar_data(session),
     ]
     await asyncio.gather(*job_list)
     session.close()
