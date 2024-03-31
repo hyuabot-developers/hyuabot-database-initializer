@@ -25,7 +25,7 @@ async def insert_restaurant_data(db_session: Session):
             dinner_time="17:00~18:30",
         ),
         dict(
-            restaurant_id=5, restaurant_name="제1생활관 식당", campus_id=1, latitude=0, longitude=0,
+            restaurant_id=6, restaurant_name="제1생활관 식당", campus_id=1, latitude=0, longitude=0,
             breakfast_time="07:30~09:00",
             lunch_time="12:00~13:30/10:30~13:30 (토요일)",
             dinner_time="17:00~18:20",
