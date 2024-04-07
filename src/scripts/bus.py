@@ -1,7 +1,7 @@
 import asyncio
 
 from aiohttp import ClientSession, ClientTimeout
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -28,7 +28,13 @@ async def fetch_bus_stop(db_session: Session, keyword: str):
         async with ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), features="xml")
-                station_list = soup.find("response").find("msgBody").find_all("busStationList")
+                response_item = soup.find_next("response")
+                if response_item is None:
+                    return
+                message_body = response_item.find_next("msgBody")
+                if not isinstance(message_body, Tag):
+                    return
+                station_list = message_body.find_all("busStationList")
                 for station in station_list:
                     stop_list.append(dict(
                         stop_id=station.find("stationId").text,
@@ -76,7 +82,13 @@ async def fetch_bus_route_list(db_session: Session, keyword: str):
         async with ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), features="xml")
-                route_search_list = soup.find("response").find("msgBody").find_all("busRouteList")
+                response_item = soup.find_next("response")
+                if response_item is None:
+                    return
+                message_body = response_item.find_next("msgBody")
+                if not isinstance(message_body, Tag):
+                    return
+                route_search_list = message_body.find_all("busRouteList")
                 for route in route_search_list:
                     if "안산" in route.find("regionName").text and keyword == route.find("routeName").text:
                         route_list.append(route.find("routeId").text)
@@ -97,9 +109,16 @@ async def insert_bus_route_item(db_session: Session, route_id: str):
         async with ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), features="xml")
-                route_search_item = soup.find("response").find("msgBody").find("busRouteInfoItem")
-                if route_search_item is None:
+                response_item = soup.find_next("response")
+                if response_item is None:
                     return
+                message_body = response_item.find_next("msgBody")
+                if not isinstance(message_body, Tag):
+                    return
+                route_search_result = message_body.find_all("busRouteInfoItem")
+                if len(route_search_result) == 0:
+                    return
+                route_search_item = route_search_result[0]
                 route_list.append(dict(
                     company_id=route_search_item.find("companyId").text,
                     company_name=route_search_item.find("companyName").text,
