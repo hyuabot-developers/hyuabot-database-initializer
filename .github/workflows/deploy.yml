@@ -1,5 +1,11 @@
 name: deploy
-on: workflow_dispatch
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  workflow_dispatch:
 jobs:
   docker-image-build:
     runs-on: [self-hosted, ARM64, Linux]
