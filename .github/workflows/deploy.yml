@@ -13,11 +13,9 @@ jobs:
         context: .
         file: ./Dockerfile
         load: true
-        tags: localhost:32000/hyuabot/hyuabot-database-initializer:latest
+        tags: localhost:5000/hyuabot-database-initializer:latest
         no-cache: true
-    - name: Push docker image
-      run: |
-        docker push localhost:32000/hyuabot/hyuabot-database-initializer:latest
-    - name: Remove docker image
-      run: |
-        docker rmi localhost:32000/hyuabot/hyuabot-database-initializer:latest
+    - name: Push image to local registry
+      run: docker push localhost:5000/hyuabot-database-initializer:latest
+    - name: Remove image from local registry
+      run: docker rmi localhost:5000/hyuabot-database-initializer:latest
