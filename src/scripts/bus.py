@@ -13,6 +13,7 @@ async def insert_bus_stop(db_session: Session):
                 "새솔고", "상록수역", "수원역", "강남역우리은행", "본오동", "한라비발디1차",
                 "푸르지오6차후문", "선부동차고지", "안산역", "경인합섬앞", "오목천차고지",
                 "안산해솔초등학교", "그랑시티자이", "광명역", "파크푸르지오", "성포주공",
+                "한국생산기술연구원",
                 "원시역", "시우역", "강남역", "파이낸셜뉴스"]
     tasks = [fetch_bus_stop(db_session, keyword) for keyword in keywords]
     await asyncio.gather(*tasks)
@@ -168,9 +169,13 @@ async def insert_bus_route_stop(db_session: Session):
         dict(route_id="216000096", stop_id="216000719", stop_sequence=10, start_stop_id=217000283),  # 3100N(한양대정문)
         dict(route_id="216000043", stop_id="216000719", stop_sequence=10, start_stop_id=217000283),  # 3101(한양대정문)
         dict(route_id="216000070", stop_id="216000719", stop_sequence=10, start_stop_id=217000283),  # 707-1(한양대정문)
+        dict(route_id="216000061", stop_id="216000383", stop_sequence=17, start_stop_id=233003145),  # 3102(한양대기숙사앞)
+        dict(route_id="216000061", stop_id="216000385", stop_sequence=18, start_stop_id=233003145),  # 3102(한국생산기술연구원)
         dict(route_id="216000061", stop_id="216000379", stop_sequence=19, start_stop_id=233003145),  # 3102(ERICA컨벤션센터)
-        dict(route_id="216000068", stop_id="216000379", stop_sequence=21, start_stop_id=216000020),  # 10-1(ERICA컨벤션센터)
-        dict(route_id="216000068", stop_id="216000138", stop_sequence=28, start_stop_id=216000145),  # 10-1(상록수역3번출구)
+        dict(route_id="216000068", stop_id="216000383", stop_sequence=12, start_stop_id=216000020),  # 10-1(한양대기숙사앞)
+        dict(route_id="216000068", stop_id="216000385", stop_sequence=13, start_stop_id=216000020),  # 10-1(한국생산기술연구원)
+        dict(route_id="216000068", stop_id="216000379", stop_sequence=14, start_stop_id=216000020),  # 10-1(ERICA컨벤션센터)
+        dict(route_id="216000068", stop_id="216000138", stop_sequence=21, start_stop_id=216000145),  # 10-1(상록수역3번출구)
         dict(route_id="216000016", stop_id="216000152", stop_sequence=16, start_stop_id=216000053),  # 62(성안길입구)
         dict(route_id="217000014", stop_id="216000070", stop_sequence=31, start_stop_id=217000066),  # 110(한양대입구)
         dict(route_id="216000104", stop_id="216000070", stop_sequence=20, start_stop_id=217000293),  # 7070(한양대입구)
