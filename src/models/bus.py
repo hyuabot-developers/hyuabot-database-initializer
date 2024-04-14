@@ -42,3 +42,4 @@ class BusRouteStop(BaseModel):
     stop_id: Mapped[int] = mapped_column(nullable=False)
     stop_sequence: Mapped[int] = mapped_column(nullable=False)
     start_stop_id: Mapped[int] = mapped_column(nullable=False)
+    minute_from_start: Mapped[int] = mapped_column(nullable=False)
