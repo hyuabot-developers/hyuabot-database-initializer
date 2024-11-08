@@ -176,7 +176,7 @@ async def insert_commute_shuttle_timetable(db_session: Session):
             for route_name, stop_name, departure_time in reader:
                 timetable_list.append(dict(
                     route_name=route_name, stop_order=stop_index_dict[route_name],
-                    stop_name=stop_name, departure_time=f"{departure_time} +09:00",
+                    stop_name=stop_name, departure_time=departure_time,
                 ))
                 stop_index_dict[route_name] += 1
     insert_statement = insert(CommuteShuttleTimetable).values(timetable_list)
