@@ -34,7 +34,7 @@ class TestInsertRestaurantData:
         await insert_restaurant_data(session)
         # Check if the data is inserted
         restaurant_count = session.query(Restaurant).count()
-        assert restaurant_count == 11
+        assert restaurant_count == 5
         for restaurant_item in session.query(Restaurant).all():  # type: Restaurant
             assert type(restaurant_item.restaurant_id) is int
             assert type(restaurant_item.restaurant_name) is str

@@ -68,8 +68,8 @@ async def fetch_bus_stop(db_session: Session, keyword: str):
 
 async def insert_bus_route(db_session: Session):
     routes = [
-        "10-1", "62", "3100", "3100N", "3101", "3102", "110", "707", "7070",
-        "707-1", "9090", "50"]
+        "10-1", "62", "3100", "3100N", "3101", "3102", "7070",
+        "9090", "50"]
     tasks = [fetch_bus_route_list(db_session, route) for route in routes]
     await asyncio.gather(*tasks)
     db_session.commit()
@@ -125,10 +125,10 @@ async def insert_bus_route_item(db_session: Session, route_id: str):
                     company_name=route_search_item.find("companyName").text,
                     company_telephone=route_search_item.find("companyTel").text,
                     district_code=route_search_item.find("districtCd").text,
-                    up_first_time=f"{route_search_item.find('upFirstTime').text} +09:00",
-                    up_last_time=f"{route_search_item.find('upLastTime').text} +09:00",
-                    down_first_time=f"{route_search_item.find('downFirstTime').text} +09:00",
-                    down_last_time=f"{route_search_item.find('downLastTime').text} +09:00",
+                    up_first_time=route_search_item.find('upFirstTime').text,
+                    up_last_time=route_search_item.find('upLastTime').text,
+                    down_first_time=route_search_item.find('downFirstTime').text,
+                    down_last_time=route_search_item.find('downLastTime').text,
                     start_stop_id=route_search_item.find("startStationId").text,
                     end_stop_id=route_search_item.find("endStationId").text,
                     route_id=route_search_item.find("routeId").text,
@@ -178,10 +178,6 @@ async def insert_bus_route_stop(db_session: Session):
             start_stop_id=217000292, minute_from_start=25,
         ),  # 3101(한양대정문)
         dict(
-            route_id="216000070", stop_id="216000719", stop_sequence=14,
-            start_stop_id=217000283, minute_from_start=22,
-        ),  # 707-1(한양대정문)
-        dict(
             route_id="216000061", stop_id="216000383", stop_sequence=17,
             start_stop_id=233003145, minute_from_start=27,
         ),  # 3102(한양대기숙사앞)
@@ -213,10 +209,6 @@ async def insert_bus_route_stop(db_session: Session):
             route_id="216000016", stop_id="216000152", stop_sequence=16,
             start_stop_id=216000053, minute_from_start=18,
         ),  # 62(성안길입구)
-        dict(
-            route_id="217000014", stop_id="216000070", stop_sequence=31,
-            start_stop_id=217000066, minute_from_start=40,
-        ),  # 110(한양대입구)
         dict(
             route_id="216000104", stop_id="216000070", stop_sequence=23,
             start_stop_id=217000293, minute_from_start=38,

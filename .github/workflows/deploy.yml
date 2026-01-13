@@ -5,10 +5,13 @@ on:
       - main
     types:
       - closed
+  push:
+    branches:
+      - feat/v2
   workflow_dispatch:
 jobs:
   docker-image-build:
-    runs-on: [self-hosted, ARM64, Linux]
+    runs-on: [self-hosted, ARM64, Linux, 1st]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Build Environment
