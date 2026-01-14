@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import PrimaryKeyConstraint, String, Time
+from sqlalchemy import String, Time, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from models import BaseModel
@@ -37,6 +37,9 @@ class BusRoute(BaseModel):
 
 class BusRouteStop(BaseModel):
     __tablename__ = "bus_route_stop"
+    __table_args__ = (
+        UniqueConstraint('stop_id', 'route_id'),
+    )
     seq: Mapped[int] = mapped_column(nullable=False, autoincrement=True, primary_key=True)
     route_id: Mapped[int] = mapped_column(nullable=False)
     stop_id: Mapped[int] = mapped_column(nullable=False)

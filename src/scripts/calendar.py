@@ -1,27 +1,12 @@
 import datetime
 
-import urllib3
-import ssl
 import requests
+import urllib3
 from bs4 import BeautifulSoup
-from requests.adapters import HTTPAdapter
 from sqlalchemy import delete, insert
 from sqlalchemy.orm import Session
 
 from models.calendar import CalendarVersion, CalendarCategory, Calendar
-
-
-class HTTPSAdapter(HTTPAdapter):
-    def init_poolmanager(self, connections, maxsize, block=False, **kwargs):
-        ctx = ssl.create_default_context()
-        ctx.set_ciphers("AES256-GCM-SHA384")
-        self.poolmanager = urllib3.PoolManager(
-            num_pools=connections,
-            maxsize=maxsize,
-            block=block,
-            ssl_version=ssl.PROTOCOL_TLSv1_2,
-            ssl_context=ctx,
-        )
 
 
 async def insert_calendar_data(db_session: Session):
@@ -37,6 +22,7 @@ async def insert_calendar_data(db_session: Session):
     }
     now_year = datetime.datetime.now().astimezone(tz=datetime.timezone(datetime.timedelta(hours=9))).year
     data: dict[int, list[str]] = {}
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     for i in range(now_year - 8, now_year + 1):
         form_data = {
             "_calendarView_WAR_eventportlet_sYear": i,
@@ -44,8 +30,7 @@ async def insert_calendar_data(db_session: Session):
         }
         data[i] = []
         with requests.Session() as session:
-            session.mount("https://", HTTPSAdapter())
-            response = session.post(calendar_url, params=params, data=form_data)
+            response = session.post(calendar_url, params=params, data=form_data, verify=False)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
             selector = "div > div > div > div > table > tbody > tr > td > div > p > span"

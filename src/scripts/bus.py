@@ -228,7 +228,10 @@ async def insert_bus_route_stop(db_session: Session):
     ]
     insert_statement = insert(BusRouteStop).values(bus_route_stop_list)
     insert_statement = insert_statement.on_conflict_do_update(
-        index_elements=["route_id", "stop_id"],
+        index_elements=[
+            BusRouteStop.route_id,
+            BusRouteStop.stop_id
+        ],
         set_=dict(
             stop_seq=insert_statement.excluded.stop_seq,
             start_stop_id=insert_statement.excluded.start_stop_id,
