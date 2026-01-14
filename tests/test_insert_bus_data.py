@@ -73,6 +73,6 @@ class TestInsertBusData:
         for bus_route_stop_item in session.query(BusRouteStop).all():  # type: BusRouteStop
             assert type(bus_route_stop_item.route_id) is int
             assert type(bus_route_stop_item.stop_id) is int
-            assert type(bus_route_stop_item.stop_sequence) is int
+            assert type(bus_route_stop_item.stop_seq) is int
             assert type(bus_route_stop_item.start_stop_id) is int
             assert type(bus_route_stop_item.minute_from_start) is int
