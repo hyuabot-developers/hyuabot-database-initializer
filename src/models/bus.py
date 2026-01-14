@@ -37,9 +37,9 @@ class BusRoute(BaseModel):
 
 class BusRouteStop(BaseModel):
     __tablename__ = "bus_route_stop"
-    __table_args__ = (PrimaryKeyConstraint("route_id", "stop_id", name="pk_bus_route_stop"),)
+    seq: Mapped[int] = mapped_column(nullable=False, autoincrement=True, primary_key=True)
     route_id: Mapped[int] = mapped_column(nullable=False)
     stop_id: Mapped[int] = mapped_column(nullable=False)
-    stop_sequence: Mapped[int] = mapped_column(nullable=False)
+    stop_seq: Mapped[int] = mapped_column(nullable=False)
     start_stop_id: Mapped[int] = mapped_column(nullable=False)
     minute_from_start: Mapped[int] = mapped_column(nullable=False)
