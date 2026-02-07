@@ -1,12 +1,27 @@
 import datetime
+import ssl
 
 import requests
 import urllib3
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
 from sqlalchemy import delete, insert
 from sqlalchemy.orm import Session
 
 from models.calendar import CalendarVersion, CalendarCategory, Calendar
+
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+class LegacyTLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        kwargs['ssl_context'] = ctx
+        return super().init_poolmanager(*args, **kwargs)
 
 
 async def insert_calendar_data(db_session: Session):
@@ -20,9 +35,12 @@ async def insert_calendar_data(db_session: Session):
         "p_p_col_count": "1",
         "_calendarView_WAR_eventportlet_action": "view",
     }
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/91.0.4472.124 Safari/537.36',
+    }
     now_year = datetime.datetime.now().astimezone(tz=datetime.timezone(datetime.timedelta(hours=9))).year
     data: dict[int, list[str]] = {}
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     for i in range(now_year - 8, now_year + 1):
         form_data = {
             "_calendarView_WAR_eventportlet_sYear": i,
@@ -30,6 +48,8 @@ async def insert_calendar_data(db_session: Session):
         }
         data[i] = []
         with requests.Session() as session:
+            session.mount('https://', LegacyTLSAdapter())
+            session.headers.update(headers)
             response = session.post(calendar_url, params=params, data=form_data, verify=False)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
