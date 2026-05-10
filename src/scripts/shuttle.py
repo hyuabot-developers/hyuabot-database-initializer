@@ -179,13 +179,7 @@ async def insert_commute_shuttle_timetable(db_session: Session):
                     stop_name=stop_name, departure_time=f"{departure_time} +09:00",
                 ))
                 stop_index_dict[route_name] += 1
+    db_session.query(CommuteShuttleTimetable).delete()
     insert_statement = insert(CommuteShuttleTimetable).values(timetable_list)
-    insert_statement = insert_statement.on_conflict_do_update(
-        index_elements=["route_name", "stop_name"],
-        set_=dict(
-            stop_order=insert_statement.excluded.stop_order,
-            departure_time=insert_statement.excluded.departure_time,
-        ),
-    )
     db_session.execute(insert_statement)
     db_session.commit()

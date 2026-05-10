@@ -22,5 +22,5 @@ class SubwayRouteStation(BaseModel):
     station_id: Mapped[str] = mapped_column(String(10), primary_key=True)
     route_id: Mapped[int] = mapped_column(nullable=False)
     station_name: Mapped[str] = mapped_column(String(30), nullable=False)
-    station_sequence: Mapped[int] = mapped_column(nullable=False)
+    station_seq: Mapped[int] = mapped_column(nullable=False)
     cumulative_time: Mapped[datetime.timedelta] = mapped_column(nullable=False)
