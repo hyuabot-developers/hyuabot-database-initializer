@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import PrimaryKeyConstraint, String
+from sqlalchemy import PrimaryKeyConstraint, UniqueConstraint, String
 from sqlalchemy.orm import mapped_column, Mapped
 
 from models import BaseModel
@@ -79,8 +79,10 @@ class CommuteShuttleStop(BaseModel):
 
 class CommuteShuttleTimetable(BaseModel):
     __tablename__ = "commute_shuttle_timetable"
-    __table_args__ = (PrimaryKeyConstraint('route_name', 'stop_name',
-                                           name="pk_commute_shuttle_timetable"),)
+    __table_args__ = (
+        UniqueConstraint('route_name', 'stop_order', name="idx_commute_shuttle_timetable"),
+    )
+    seq: Mapped[int] = mapped_column(nullable=False, autoincrement=True, primary_key=True)
     route_name: Mapped[str] = mapped_column(String(15), nullable=False)
     stop_name: Mapped[str] = mapped_column(String(50), nullable=False)
     stop_order: Mapped[int] = mapped_column(nullable=False)

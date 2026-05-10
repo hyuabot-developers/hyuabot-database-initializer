@@ -53,8 +53,8 @@ async def insert_calendar_data(db_session: Session):
                 data[i].append(span.text.strip())
 
     insert_data = []
-    event_id = 1
     for k, v in data.items():
+        print(f"Processing calendar data for year {k}, {v}")
         for index in range(0, len(v), 2):
             year = k
             if "~" in v[index]:
@@ -77,14 +77,12 @@ async def insert_calendar_data(db_session: Session):
                 year += 1
             end_datetime = datetime.datetime(year, int(end_month), int(end_day))
             insert_data.append({
-                "academic_calendar_id": event_id,
                 "category_id": 1,
                 "start_date": start_datetime,
                 "end_date": end_datetime,
                 "title": v[index + 1],
                 "description": "",
             })
-            event_id += 1
     # Delete all calendar data
     delete_calendar_statement = delete(Calendar)
     db_session.execute(delete_calendar_statement)
@@ -106,6 +104,7 @@ async def insert_calendar_data(db_session: Session):
         "category_name": "전체",
     })
     db_session.execute(insert_category_statement)
-    insert_calendar_statement = insert(Calendar).values(insert_data)
-    db_session.execute(insert_calendar_statement)
+    if insert_data:
+        insert_calendar_statement = insert(Calendar).values(insert_data)
+        db_session.execute(insert_calendar_statement)
     db_session.commit()

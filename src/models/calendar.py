@@ -24,7 +24,7 @@ class Calendar(BaseModel):
     __table_args__ = (
         ForeignKeyConstraint(["category_id"], ["academic_calendar_category.category_id"]),
     )
-    academic_calendar_id: Mapped[int] = mapped_column(primary_key=True)
+    academic_calendar_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     category_id: Mapped[int] = mapped_column(nullable=False)
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(String(100), nullable=False)

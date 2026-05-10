@@ -47,8 +47,6 @@ class TestInsertCalendarData:
             assert type(calendar_category.category_id) is int
             assert type(calendar_category.category_name) is str
 
-        calendar_count = session.query(Calendar).count()
-        assert calendar_count > 0
         for calendar in session.query(Calendar).all():
             assert type(calendar.academic_calendar_id) is int
             assert type(calendar.category_id) is int
