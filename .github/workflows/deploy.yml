@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 jobs:
   docker-image-build:
-    runs-on: [self-hosted, ARM64, Linux]
+    runs-on: [self-hosted, ARM64, Linux, 1st]
     steps:
     - uses: actions/checkout@v7
     - name: Set up Docker Build Environment
@@ -23,5 +23,9 @@ jobs:
         no-cache: true
     - name: Push image to local registry
       run: docker push localhost:5000/hyuabot-database-initializer:latest
+    - name: Sync image to worker registry
+      uses: hyuabot-developers/hyuabot-infrastructure/.github/actions/sync-local-registry@a091ea37f391ae60eb7828325782a397cc7cae9c
+      with:
+        image: localhost:5000/hyuabot-database-initializer:latest
     - name: Remove image from local registry
       run: docker rmi localhost:5000/hyuabot-database-initializer:latest
