@@ -178,10 +178,6 @@ async def insert_bus_route_stop(db_session: Session):
             start_stop_id=217000292, minute_from_start=25,
         ),  # 3101(한양대정문)
         dict(
-            route_id="216000070", stop_id="216000719", stop_seq=14,
-            start_stop_id=217000283, minute_from_start=22,
-        ),  # 707-1(한양대정문)
-        dict(
             route_id="216000061", stop_id="216000383", stop_seq=17,
             start_stop_id=233003145, minute_from_start=27,
         ),  # 3102(한양대기숙사앞)
@@ -213,10 +209,6 @@ async def insert_bus_route_stop(db_session: Session):
             route_id="216000016", stop_id="216000152", stop_seq=16,
             start_stop_id=216000053, minute_from_start=18,
         ),  # 62(성안길입구)
-        dict(
-            route_id="217000014", stop_id="216000070", stop_seq=31,
-            start_stop_id=217000066, minute_from_start=40,
-        ),  # 110(한양대입구)
         dict(
             route_id="216000104", stop_id="216000070", stop_seq=23,
             start_stop_id=217000293, minute_from_start=38,
