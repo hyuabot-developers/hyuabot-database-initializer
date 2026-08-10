@@ -38,6 +38,11 @@ src/
 | `POSTGRES_HOST`     | PostgreSQL host          |
 | `POSTGRES_PORT`     | PostgreSQL port          |
 | `POSTGRES_DB`       | PostgreSQL database name |
+| `SUBWAY_LINE4_TRANSLATION_XLSX` | Path to the KRIC Line 4 station-name workbook |
+| `SUBWAY_SUINBUNDANG_TRANSLATION_XLSX` | Path to the KRIC Suin–Bundang Line station-name workbook |
+| `SUBWAY_SEOHAE_TRANSLATION_XLSX` | Path to the KRIC Seohae Line station-name workbook |
+
+The optional subway workbooks are the public railway station-name files published on data.go.kr. When supplied, Korean, English, Japanese, Simplified Chinese, and Traditional Chinese names are matched to the stable HYUabot station IDs and upserted. Initialization fails if an existing station cannot be matched, preventing a partially translated route from being accepted silently.
 
 ## Running Locally
 
