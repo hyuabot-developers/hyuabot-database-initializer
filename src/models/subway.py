@@ -24,3 +24,12 @@ class SubwayRouteStation(BaseModel):
     station_name: Mapped[str] = mapped_column(String(30), nullable=False)
     station_seq: Mapped[int] = mapped_column(nullable=False)
     cumulative_time: Mapped[datetime.timedelta] = mapped_column(nullable=False)
+
+
+class SubwayStationTranslation(BaseModel):
+    __tablename__ = "subway_station_translation"
+    station_id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    language: Mapped[str] = mapped_column(String(10), primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    source: Mapped[str] = mapped_column(String(30), nullable=False)
+    is_verified: Mapped[bool] = mapped_column(nullable=False, default=False)

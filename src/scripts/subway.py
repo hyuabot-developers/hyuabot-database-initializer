@@ -1,11 +1,13 @@
 import csv
+import os
 from datetime import timedelta
 
 from aiohttp import ClientSession
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from models.subway import SubwayRoute, SubwayRouteStation, SubwayStation
+from models.subway import SubwayRoute, SubwayRouteStation, SubwayStation, SubwayStationTranslation
+from scripts.subway_translation import load_kric_station_translations
 
 
 async def insert_subway_route(db_session: Session):
@@ -42,6 +44,7 @@ async def insert_subway_station(db_session: Session):
     station_list: list[dict] = []
     station_name_list: list[dict] = []
     station_name_dict = {
+        "당고개": "불암산",
         "신길온": "신길온천", "평촌동": "평촌", "과천청": "과천정부청사", "경마공": "경마공원", "총신대": "이수",
         "4이촌": "이촌", "숙대입": "숙대입구", "4서울": "서울역", "4충무": "충무로", "4동운": "동대문역사문화공원",
         "4동대": "동대문", "한성대": "한성대입구", "성신여": "성신여대입구", "미아4": "미아사거리", "4창동": "창동",
@@ -54,7 +57,7 @@ async def insert_subway_station(db_session: Session):
             async with session.get(url) as response:
                 reader = csv.reader((await response.text()).splitlines(), delimiter=",")
                 for row_index, (station_number, station_name, cumulative_time) in enumerate(reader):
-                    if station_name in station_name_dict.keys():
+                    if station_name in station_name_dict:
                         station_name = station_name_dict[station_name]
                     station_list.append(
                         dict(
@@ -66,8 +69,8 @@ async def insert_subway_station(db_session: Session):
                         ),
                     )
                     station_name_list.append(dict(station_name=station_name))
-    insert_statement = insert(SubwayStation).values(station_name_list)
-    insert_statement = insert_statement.on_conflict_do_nothing()
+
+    insert_statement = insert(SubwayStation).values(station_name_list).on_conflict_do_nothing()
     db_session.execute(insert_statement)
     db_session.commit()
 
@@ -79,6 +82,52 @@ async def insert_subway_station(db_session: Session):
             station_name=insert_statement.excluded.station_name,
             cumulative_time=insert_statement.excluded.cumulative_time,
             station_seq=insert_statement.excluded.station_seq,
+        ),
+    )
+    db_session.execute(insert_statement)
+    db_session.commit()
+
+    korean_translations = [
+        dict(
+            station_id=station["station_id"],
+            language="ko",
+            name=station["station_name"],
+            source="HYUABOT_EXISTING",
+            is_verified=True,
+        )
+        for station in station_list
+    ]
+    _upsert_translations(db_session, korean_translations)
+    _insert_official_translations(db_session)
+
+
+def _insert_official_translations(db_session: Session):
+    official_sources = {
+        1004: os.getenv("SUBWAY_LINE4_TRANSLATION_XLSX"),
+        1071: os.getenv("SUBWAY_SUINBUNDANG_TRANSLATION_XLSX"),
+        1093: os.getenv("SUBWAY_SEOHAE_TRANSLATION_XLSX"),
+    }
+    for route_id, workbook_path in official_sources.items():
+        if not workbook_path:
+            continue
+        route_stations = db_session.query(SubwayRouteStation).filter(SubwayRouteStation.route_id == route_id).all()
+        translations = load_kric_station_translations(
+            workbook_path,
+            ((station.station_id, station.station_name) for station in route_stations),
+        )
+        _upsert_translations(db_session, translations)
+
+
+def _upsert_translations(db_session: Session, translations: list[dict]):
+    if not translations:
+        return
+    insert_statement = insert(SubwayStationTranslation).values(translations)
+    insert_statement = insert_statement.on_conflict_do_update(
+        index_elements=["station_id", "language"],
+        set_=dict(
+            name=insert_statement.excluded.name,
+            source=insert_statement.excluded.source,
+            is_verified=insert_statement.excluded.is_verified,
         ),
     )
     db_session.execute(insert_statement)
