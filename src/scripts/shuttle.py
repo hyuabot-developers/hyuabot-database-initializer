@@ -12,6 +12,13 @@ from models.shuttle import ShuttlePeriodType, ShuttlePeriod, ShuttleStop, \
     CommuteShuttleTimetable
 
 
+def commute_route_seed_rows() -> list[dict]:
+    return [
+        dict(route_name=route_name, route_description_korean="", route_description_english="")
+        for route_name in ("1", "2", "3", "A", "B", "C")
+    ]
+
+
 async def insert_shuttle_period_type(db_session: Session):
     period_type_list = [
         dict(period_type="semester"),
@@ -138,6 +145,10 @@ async def insert_commute_shuttle_route(db_session: Session):
         ),
     )
     db_session.execute(insert_statement)
+    db_session.commit()
+    redesign_routes = commute_route_seed_rows()
+    insert_statement = insert(CommuteShuttleRoute).values(redesign_routes)
+    db_session.execute(insert_statement.on_conflict_do_nothing(index_elements=["route_name"]))
     db_session.commit()
 
 
