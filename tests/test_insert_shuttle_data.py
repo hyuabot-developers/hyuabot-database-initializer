@@ -82,9 +82,27 @@ class TestInsertShuttleData:
         # Insert commute shuttle route
         await insert_commute_shuttle_route(session)
         # Check if the data is inserted
-        commute_shuttle_route_count = session.query(CommuteShuttleRoute).count()
-        assert commute_shuttle_route_count == 3
-        for commute_shuttle_route_item in session.query(CommuteShuttleRoute).all():
+        expected_route_names = {"1", "2", "3", "A", "B", "C", "4", "5", "D"}
+        commute_shuttle_route_items = session.query(CommuteShuttleRoute).all()
+        assert {
+            route_item.route_name for route_item in commute_shuttle_route_items
+        } == expected_route_names
+
+        legacy_route_descriptions = {
+            "4": ("천호/잠실/성남/수내", "Cheonho/Jamsil/Sungnam/Sunae"),
+            "5": ("정자/죽전/수지/광교", "Jeongja/Jukjeon/Suji/Gwanggyo"),
+            "D": ("수지/죽전/정자/야탑", "Suji/Jukjeon/Jeongja/Yatap"),
+        }
+        assert {
+            route_item.route_name: (
+                route_item.route_description_korean,
+                route_item.route_description_english,
+            )
+            for route_item in commute_shuttle_route_items
+            if route_item.route_name in legacy_route_descriptions
+        } == legacy_route_descriptions
+
+        for commute_shuttle_route_item in commute_shuttle_route_items:
             assert type(commute_shuttle_route_item.route_name) is str
             assert type(commute_shuttle_route_item.route_description_korean) is str
             assert type(commute_shuttle_route_item.route_description_english) is str
